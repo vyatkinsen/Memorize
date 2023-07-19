@@ -1,47 +1,82 @@
 import SwiftUI
 
 struct ContentView: View {
-    var emojis = ["🏳️‍🌈", "😭", "🥸", "🥹", "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐧", "🐦", "🐤"]
-    @State var emojiCount = 6
+    var topTitle = "Memorize!"
+    
+    enum emojiEnum {
+        case vehiclesEmoji
+        case flagsEmoji
+        case foodEmoji
+        
+        var emojis: [String] {
+            switch self {
+            case .vehiclesEmoji:
+                return ["🚗", "🚕", "🚙", "🚌", "🚎", "🏎️", "🚓", "🚑", "🚒", "🚐", "🚚", "🚛", "🚜", "🛴", "🚲", "🛵", "🏍️", "🛺", "🚍", "🚂"]
+            case .flagsEmoji:
+                return ["🇦🇫", "🇦🇽", "🇦🇱", "🇩🇿", "🇦🇸", "🇦🇩", "🇦🇴", "🇦🇮", "🇦🇶", "🇦🇬", "🇦🇷", "🇦🇲", "🇦🇼", "🇦🇺", "🇦🇹", "🇦🇿", "🇧🇸", "🇧🇭", "🇧🇩", "🇧🇧", "🇧🇾"]
+            case .foodEmoji:
+                return ["🍔", "🍕", "🌭", "🍟", "🍗", "🍖", "🍤", "🍱", "🍣", "🍛", "🍜", "🍝", "🍲", "🍥", "🍢", "🍡", "🍦", "🍧", "🍨", "🍩", "🍪"]
+            }
+        }
+    }
+
+    @State var selectedEmojis: [String]
+    @State var emojiCount = 20
+    
+    init() {
+        selectedEmojis = emojiEnum.vehiclesEmoji.emojis
+    }
+    
     var body: some View {
         VStack {
-            HStack {
-                ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
-                    CardView(content: emoji)
+            Text(topTitle)
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .padding()
+            ScrollView{
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
+                    ForEach(selectedEmojis[0..<emojiCount], id: \.self) { emoji in
+                        CardView(content: emoji).aspectRatio(2/3, contentMode: .fit)
+                    }
                 }
             }
+            .foregroundColor(/*@START_MENU_TOKEN@*/.red/*@END_MENU_TOKEN@*/)
             Spacer()
             HStack {
-                remove
-                Spacer()
-                add
+                vehicles
+                 flags
+                food
             }
             .font(.largeTitle)
             .padding(.horizontal)
             
         }
         .padding(.horizontal)
-        .foregroundColor(/*@START_MENU_TOKEN@*/.red/*@END_MENU_TOKEN@*/)
     }
-    var remove: some View {
+    
+    var vehicles: some View {
         Button {
-            if emojiCount > 1 {
-                emojiCount -= 1
-            }
+            selectedEmojis = emojiEnum.vehiclesEmoji.emojis
         } label: {
-            Image(systemName: "minus.circle")
+            Image(systemName: "car.circle")
         }
     }
     
-    var add: some View {
+    var flags: some View {
         Button {
-            if emojiCount < emojis.count {
-                emojiCount += 1
-            }
+            selectedEmojis = emojiEnum.flagsEmoji.emojis
         } label: {
-            Image(systemName: "plus.circle")
+            Image(systemName: "flag.circle")
         }
-     }
+    }
+    
+    var food: some View {
+        Button {
+            selectedEmojis = emojiEnum.foodEmoji.emojis
+        } label: {
+            Image(systemName: "fork.knife.circle")
+        }
+    }
 }
 
 struct CardView: View {
@@ -53,7 +88,7 @@ struct CardView: View {
             let shape = RoundedRectangle(cornerRadius: 20)
             if isFaceUp {
                 shape.fill().foregroundColor(Color.white)
-                shape.stroke(lineWidth: 3)
+                shape.strokeBorder(lineWidth: 3)
                 Text(content).font(.largeTitle)
             } else {
                 shape.fill()
@@ -69,8 +104,5 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
             .preferredColorScheme(.light)
-        ContentView()
-            .preferredColorScheme(.dark)
-            
     }
 }
